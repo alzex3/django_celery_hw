@@ -1,0 +1,55 @@
+services:
+  web:
+    build: ./project
+    command: python manage.py runserver 0.0.0.0:8000
+    volumes:
+      - ./project:/usr/src/app/
+    ports:
+      - 8000:8000
+    environment:
+      - SECRET_KEY=d7baa1_i7%*3r9-=z-+_mz4r-!784raae4+--a_r(g@k8jo8y3r27%
+      - POSTGRES_NAME=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_HOST=postgres
+    depends_on:
+      - redis
+      - postgres
+      - smtp
+
+  celery:
+    build: ./project
+    command: celery -A adverts_api worker --loglevel=info
+    volumes:
+      - ./project:/usr/src/app
+    environment:
+      - SECRET_KEY=d7baa1_i7%*3r9-=z-+_mz4r-!784raae4+--a_r(g@k8jo8y3r27%
+      - POSTGRES_NAME=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_HOST=postgres
+    depends_on:
+      - web
+      - redis
+      - postgres
+      - smtp
+
+  redis:
+    image: redis
+
+  postgres:
+    image: postgres
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_NAME=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+
+  smtp:
+    image: mailhog/mailhog
+    ports:
+      - 8025:8025
+
+volumes:
+  postgres_data:
