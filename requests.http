@@ -41,5 +41,5 @@ Content-Type: application/json
 }
 
 ### Send emails status
-GET http://127.0.0.1:8000/tasks/fbf316ec-143f-4e9b-b1cb-c650ebddfedd/
+GET http://127.0.0.1:8000/tasks/709f2bb0-5803-49ef-92ba-9b96455a674e/
 Content-Type: application/json

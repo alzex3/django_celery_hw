@@ -1,4 +1,5 @@
 django
+more_itertools
 djangorestframework
 psycopg2-binary
 celery

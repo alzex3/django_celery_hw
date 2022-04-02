@@ -1,20 +1,23 @@
 from celery import shared_task
 from django.core.mail import EmailMessage
+from more_itertools import chunked
+
 from api.models import Advert
 
 
 @shared_task
-def create_task(email):
-    users = Advert.objects.all()
+def create_task(new_email):
+    emails_addresses = Advert.objects.all().values('owner_email')
 
-    recipients = []
+    for email_address_chunk in chunked(emails_addresses, 15):
 
-    for user in users:
-        recipients.append(user.owner_email)
+        recipients = []
+        for email_address in email_address_chunk:
+            recipients.append(email_address.get('owner_email'))
 
-    msg = EmailMessage(
-        subject=email['subject'],
-        to=recipients,
-        body=email['msg'],
-    )
-    msg.send()
+        msg = EmailMessage(
+            subject=new_email['subject'],
+            to=recipients,
+            body=new_email['msg'],
+        )
+        msg.send()
